@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {
+  Container, Row, Col, Button,
+} from 'reactstrap';
 import { translateStatusToHuman } from './label-utils';
 
 class Game extends React.Component {
@@ -97,38 +100,52 @@ class Game extends React.Component {
     // TODO: can I write these better ?
     const playButtons = (
       <div>
-        <button type="button" onClick={this.rock}>Rock</button>
-        <button type="button" onClick={this.paper}>Paper</button>
-        <button type="button" onClick={this.scissors}>Sccisors</button>
+        <Button onClick={this.rock}>Rock</Button>
+        <br />
+        <Button onClick={this.paper}>Paper</Button>
+        <br />
+        <Button onClick={this.scissors}>Sccisors</Button>
+        <br />
       </div>
     );
-    const resetButton = <button type="button" onClick={this.resetGame}>New Game</button>;
+    const resetButton = <Button onClick={this.resetGame}>New Game</Button>;
 
     const gameButtons = played ? resetButton : playButtons;
 
     return (
-      <div>
-        {gameButtons}
-        <br />
-        <span>
-          {' '}
-          Game status:
-          {gameStatusString}
-        </span>
-        <br />
-        <span>
-          {' '}
-          Player move:
-          {playerMoveString}
-        </span>
-        <br />
-        <span>
-          {' '}
-          CPU choice:
-          {opponentMoveString}
-        </span>
-        <br />
-      </div>
+      <Container>
+        <Row>
+          <Col xs={3}>
+            Pretty simple here, choose an option, try again until the boredom is gone
+          </Col>
+
+          <Col xs={3}>
+            {gameButtons}
+          </Col>
+
+          <Col>
+            <br />
+            <span>
+              {' '}
+              Game status:
+              {gameStatusString}
+            </span>
+            <br />
+            <span>
+              {' '}
+              Player move:
+              {playerMoveString}
+            </span>
+            <br />
+            <span>
+              {' '}
+              CPU choice:
+              {opponentMoveString}
+            </span>
+            <br />
+          </Col>
+        </Row>
+      </Container>
     );
   }
 }

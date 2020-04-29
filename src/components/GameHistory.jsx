@@ -1,5 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {
+  Card, Container, CardHeader, CardBody,
+  CardText,
+} from 'reactstrap';
 import { translateStatusToHuman } from './label-utils';
 
 class GameHistory extends React.Component {
@@ -15,35 +19,35 @@ class GameHistory extends React.Component {
   render() {
     const { gamesPlayed } = this.state;
     const gameHistory = gamesPlayed.sort((gameOne, gameTwo) => gameTwo.date - gameOne.date).map((game) => (
-      <div className="historical-game">
-        <span>
-          Date played:
-          {game.date.toISOString()}
-        </span>
-        <br />
-        <span>
-          Outcome:
+      <Card>
+        <CardHeader>
           {translateStatusToHuman(game.status)}
-        </span>
-        <br />
-        <span>
-          Human choise:
-          {game.playerMove}
-        </span>
-        <br />
-        <span>
-          CPU Choise:
-          {game.opponentMove}
-        </span>
-        <br />
-      </div>
+          {' '}
+          -
+          {' '}
+          {game.date.toISOString()}
+        </CardHeader>
+        <CardBody>
+          <CardText>
+            <span>
+              Human choise:
+              {game.playerMove}
+            </span>
+            <br />
+            <span>
+              CPU Choise:
+              {game.opponentMove}
+            </span>
+          </CardText>
+        </CardBody>
+      </Card>
     ));
 
     return (
-      <div>
-        <h1>Games history</h1>
+      <Container>
+        <h1>Game history</h1>
         {gameHistory}
-      </div>
+      </Container>
     );
   }
 }
