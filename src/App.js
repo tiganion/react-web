@@ -1,11 +1,35 @@
 import React from 'react';
 
 class App extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state ={ 
+      gamesPlayed : [],
+    }
+
+    this.onGame = this.onGame.bind(this);
+  }
+
+  onGame(game){
+    // alert('onGame called');
+    this.setState((state, props) => {
+      //TODO: wtf, this is called twice
+      console.log(state.gamesPlayed);
+      state.gamesPlayed.push(game);
+      console.log(state.gamesPlayed);
+      return {
+        gamesPlayed: state.gamesPlayed,
+      };
+    });
+  }
+
   render() {
     return (
       <div>
         <h1>Rock Paper Sccisors</h1>
-        <Game/>
+        <Game onGame={this.onGame}/>
+        <GameHistory history={this.state.gamesPlayed}/>
       </div>
       )
   }
@@ -34,8 +58,22 @@ class Game extends React.Component {
     this.rock = this.rock.bind(this);
     this.paper = this.paper.bind(this);
     this.scissors = this.scissors.bind(this);
+    this.notifyGame = this.notifyGame.bind(this);
     this.playerMove = this.playerMove.bind(this);
     this.resetGame = this.resetGame.bind(this);
+  }
+
+  //todo: rename to save game to history ?
+  notifyGame(){
+    let gameDetails = {
+      status : this.state.status,
+      playerMove: this.state.playerMove,
+      opponentMove: this.state.opponentMove,
+      date: new Date(),
+    }
+
+    // this looks directly into props, maybe this can be saved somehwere
+    this.props.onGame(gameDetails);
   }
 
   playerMove(playerMove){
@@ -49,7 +87,9 @@ class Game extends React.Component {
         status: status,
         playerMove: playerMove,
         opponentMove: opponentMove,
-      });
+      }, 
+      // here is a callback, for when the state was updated
+      () => this.notifyGame());
 
     } else {
       alert('game finished, must restart');
@@ -86,14 +126,19 @@ class Game extends React.Component {
     let playerMove = this.state.played ? this.state.playerMove : '';
     let opponentMove = this.state.played ? this.state.opponentMove : '';
 
-    let resetButton = this.state.played ? <button onClick={this.resetGame}>Reset</button> : '';
-    
+    // TODO: can I write these better ?
+    let playButtons = <div>
+      <button onClick={this.rock}>Rock</button>
+      <button onClick={this.paper}>Paper</button>
+      <button onClick={this.scissors}>Sccisors</button>
+      </div>;
+    let resetButton = <button onClick={this.resetGame}>New Game</button>;
+
+    let gameButtons = this.state.played ? resetButton : playButtons;
 
     return (
       <div>
-          <button onClick={this.rock}>Rock</button>
-          <button onClick={this.paper}>Paper</button>
-          <button onClick={this.scissors}>Sccisors</button>
+          {gameButtons}
           <br/>
           <span> Game status: {gameStatus} </span>
           <br/>
@@ -101,9 +146,39 @@ class Game extends React.Component {
           <br/>
           <span> CPU choice: {opponentMove} </span>
           <br/>
-          {resetButton}
       </div>
      )
+  }
+}
+
+class GameHistory extends React.Component {
+  constructor(props){
+    super(props);
+
+    // now if the state of 'props.history' changes from where it passed, the component using gamesPlayed will see that
+    this.state = {
+      gamesPlayed: props.history,
+    }
+  }
+
+  render(){
+    let gameHistory = this.state.gamesPlayed.sort((gameOne, gameTwo) => {
+      return gameTwo.date - gameOne.date;
+    }).map( (game) => (
+      <div className="historical-game">
+        <span>Date played: {game.date.toISOString ()}</span><br/>
+        <span>Outcome: {translateStatusToHuman(game.status)}</span><br/>
+        <span>Human choise: {game.playerMove}</span><br/>
+        <span>CPU Choise: {game.opponentMove}</span><br/>
+      </div>
+    ));
+
+    return (
+      <div>
+        <h1>Games history</h1>
+        {gameHistory}
+      </div>
+    )
   }
 }
 
